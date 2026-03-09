@@ -51,6 +51,11 @@ export default function LoginPage() {
             onKeyDown={e => e.key === 'Enter' && handleLogin()}
             className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-black"
           />
+	  <div className="text-right">
+	    <Link href="/forgot-password" className="text-xs text-gray-400 hover:text-black">
+	      비밀번호를 잊으셨나요?
+            </Link>
+          </div>
 
           {error && <p className="text-red-500 text-sm">{error}</p>}
 

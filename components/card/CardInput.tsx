@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
-type InputType = 'youtube' | 'text' | 'image'
+type InputType = 'youtube' | 'text' | 'image' | 'url'
 
 export default function CardInput() {
   const [type, setType] = useState<InputType>('youtube')
@@ -34,7 +34,11 @@ export default function CardInput() {
       if (!image) { setError('이미지를 선택해주세요'); setLoading(false); return }
       formData.append('image', image)
       if (sourceUrl) formData.append('source_url', sourceUrl)
+    } else if (type === 'url') {
+      formData.append('url', url)
+      formData.append('source_url', url)
     }
+
 
     const res = await fetch('/api/cards/create', { method: 'POST', body: formData })
     const data = await res.json()
@@ -53,7 +57,7 @@ export default function CardInput() {
     <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
       {/* 타입 선택 */}
       <div className="flex gap-2">
-        {(['youtube', 'text', 'image'] as InputType[]).map(t => (
+        {(['text', 'url', 'image', 'youtube'] as InputType[]).map(t => (
           <button
             key={t}
             onClick={() => setType(t)}
@@ -61,7 +65,7 @@ export default function CardInput() {
               type === t ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
             }`}
           >
-            {t === 'youtube' ? '📺 유튜브' : t === 'text' ? '📝 텍스트' : '📸 이미지'}
+            {t === 'text' ? '📝 텍스트' : t === 'url' ? '🔗 링크' : t === 'image' ? '📸 이미지' : '📺 유튜브'}
           </button>
         ))}
       </div>
@@ -112,6 +116,16 @@ export default function CardInput() {
             className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-black"
           />
         </>
+      )}
+
+      {type === 'url' && (
+        <input
+          type="url"
+          placeholder="분석할 링크를 붙여넣어요"
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          className="w-full border rounded-xl px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-black"
+        />
       )}
 
       {/* 공개 범위 */}

@@ -3,6 +3,7 @@ import { analyzeText, analyzeYoutube, analyzeImage } from '@/lib/gemini'
 import { getYoutubeTranscript } from '@/lib/youtube'
 import { nanoid } from 'nanoid'
 import { NextRequest, NextResponse } from 'next/server'
+import { crawlUrl } from '@/lib/crawler'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -26,6 +27,11 @@ export async function POST(request: NextRequest) {
       const transcript = await getYoutubeTranscript(url)
       aiResult = await analyzeYoutube(transcript)
 
+    } else if (type === 'url') {
+      const url = formData.get('url') as string
+      const content = await crawlUrl(url)
+      aiResult = await analyzeText(content)
+    
     } else if (type === 'image') {
       const file = formData.get('image') as File
       const arrayBuffer = await file.arrayBuffer()
